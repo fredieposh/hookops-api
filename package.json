@@ -28,6 +28,6 @@
   },
   "dependencies": {
     "fastify": "^5.11.3",
-    "hookops-shared": "file:../hookops-shared"
+    "@fredieposh/hookops-shared": "^1.0.0"
   }
 }
