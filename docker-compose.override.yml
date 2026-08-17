@@ -1,0 +1,10 @@
+services:
+  api:
+    context: .
+    args:
+      NODE_AUTH_TOKEN: ${NODE_AUTH_TOKEN}
+
+  worker:
+    context: ../hookops-worker
+    args:
+      NODE_AUTH_TOKEN: ${NODE_AUTH_TOKEN}

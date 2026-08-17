@@ -1,13 +1,15 @@
 FROM node:22-alpine AS builder
 WORKDIR /app
 
-COPY hookops-shared/ /hookops-shared
+ARG NODE_AUTH_TOKEN
+COPY package*.json ./
+COPY .npmrc ./
+RUN echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> .npmrc \
+    && npm ci
+    && rm .npmrc
 
-COPY hookops-api/package*.json ./
-RUN npm ci
-
-COPY hookops-api/tsconfig.json ./
-COPY hookops-api/src/ src/
+COPY tsconfig.json ./
+COPY src/ src/
 RUN npm run build
 
 FROM node:22-alpine AS runner
