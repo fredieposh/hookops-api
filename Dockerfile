@@ -5,7 +5,7 @@ ARG NODE_AUTH_TOKEN
 COPY package*.json ./
 COPY .npmrc ./
 RUN echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> .npmrc \
-    && npm ci
+    && npm ci \
     && rm .npmrc
 
 COPY tsconfig.json ./
