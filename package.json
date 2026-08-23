@@ -27,7 +27,7 @@
     "vitest": "^4.1.10"
   },
   "dependencies": {
-    "fastify": "^5.11.3",
-    "@fredieposh/hookops-shared": "^1.0.0"
+    "@fredieposh/hookops-shared": "1.0.1",
+    "fastify": "^5.11.3"
   }
 }
