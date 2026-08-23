@@ -2,11 +2,15 @@ services:
   api:
     build:
       context: .
-      args:
-        NODE_AUTH_TOKEN: ${NODE_AUTH_TOKEN}
+      secrets:
+        - NODE_AUTH_TOKEN
 
   worker:
     build:
       context: ../hookops-worker
-      args:
-        NODE_AUTH_TOKEN: ${NODE_AUTH_TOKEN}
+      secrets:
+        - NODE_AUTH_TOKEN
+
+secrets:
+  NODE_AUTH_TOKEN:
+    environment: NODE_AUTH_TOKEN
