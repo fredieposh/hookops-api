@@ -1,11 +1,9 @@
 FROM node:22.23.2-alpine AS builder
 WORKDIR /app
 
-ARG NODE_AUTH_TOKEN
 COPY package*.json ./
 COPY .npmrc ./
-RUN --mount=type=secret,id=NODE_AUTH_TOKEN,env=NODE_AUTH_TOKEN \
-    && npm ci
+RUN --mount=type=secret,id=NODE_AUTH_TOKEN,env=NODE_AUTH_TOKEN npm ci
 
 COPY tsconfig.json ./
 COPY src/ src/
