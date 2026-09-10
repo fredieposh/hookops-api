@@ -7,7 +7,7 @@
     "node": "22.23.2"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
