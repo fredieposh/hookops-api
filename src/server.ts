@@ -1,27 +1,27 @@
 import { buildApp } from './app.js';
+import { loadConfig } from './config/index.js';
 
-const PORT = Number(process.env.PORT) || 3000;
-const HOST = process.env.HOST || '0.0.0.0';
-
-const app = buildApp();
+const config = loadConfig();
+const app = buildApp(config);
 
 const start = async () => {
   try {
-    await app.listen({ port: PORT, host: HOST });
+    await app.listen({
+      port: config.port,
+      host: config.host,
+    });
   } catch (err) {
     app.log.error(err);
-    process.exit(1);
+    process.exitCode = 1;
   }
 };
 
 process.on('SIGTERM', async () => {
   await app.close();
-  process.exit(0);
 });
 
 process.on('SIGINT', async () => {
   await app.close();
-  process.exit(0);
 });
 
-start();
+await start();
