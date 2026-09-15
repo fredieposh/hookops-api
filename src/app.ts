@@ -2,16 +2,18 @@ import Fastify from 'fastify';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { join, dirname } from 'path';
-import { type AppConfig } from './config/index.js';
 import { assessContractMajor } from './health/contract-major.js';
+import { createLogger, LoggerConfig } from './observability/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-type AppStartupConfig = Pick<AppConfig, 'contractMajor'>;
+type AppStartupConfig = LoggerConfig;
 
 export function buildApp(config: AppStartupConfig) {
-  const app = Fastify({ logger: true });
+  const app = Fastify({
+    loggerInstance: createLogger(config),
+  });
   const contract = assessContractMajor(config.contractMajor, app.log);
 
   app.get('/health', () => {

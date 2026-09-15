@@ -3,9 +3,16 @@ import { describe, it, vi, expect } from 'vitest';
 import { buildApp } from '../app.js';
 import { assessContractMajor } from './contract-major.js';
 
+function createTestApp(contractMajor = SUPPORTED_SCHEMA_MAJOR) {
+  return buildApp({
+    serviceName: 'hookops-api',
+    serviceVersion: '1.0.0',
+    contractMajor,
+  });
+}
 describe('contract-major readiness', () => {
   it('readiness_on_contract_major_mismatch', async () => {
-    const app = buildApp({ contractMajor: SUPPORTED_SCHEMA_MAJOR + 1 });
+    const app = createTestApp(SUPPORTED_SCHEMA_MAJOR + 1);
     try {
       const response = await app.inject({
         method: 'GET',
@@ -27,7 +34,7 @@ describe('contract-major readiness', () => {
   });
 
   it('allows readiness when contract majors match', async () => {
-    const app = buildApp({ contractMajor: SUPPORTED_SCHEMA_MAJOR });
+    const app = createTestApp();
 
     try {
       const response = await app.inject({
