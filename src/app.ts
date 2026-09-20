@@ -1,19 +1,31 @@
-import Fastify from 'fastify';
+import Fastify, { LogController } from 'fastify';
+import {
+  registerCorrelationHook,
+  resolveRequestCorrelationId,
+} from './observability/request-correlation.js';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { join, dirname } from 'path';
 import { assessContractMajor } from './health/contract-major.js';
-import { createLogger, LoggerConfig } from './observability/logger.js';
+import { LoggerConfig } from './observability/logger.js';
+import pino from 'pino';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 type AppStartupConfig = LoggerConfig;
 
-export function buildApp(config: AppStartupConfig) {
+export function buildApp(config: AppStartupConfig, logger: pino.Logger) {
   const app = Fastify({
-    loggerInstance: createLogger(config),
+    loggerInstance: logger,
+    requestIdHeader: false,
+    genReqId: resolveRequestCorrelationId,
+    logController: new LogController({
+      requestIdLogLabel: 'correlationId',
+    }),
   });
+
+  registerCorrelationHook(app);
   const contract = assessContractMajor(config.contractMajor, app.log);
 
   app.get('/health', () => {

@@ -1,8 +1,10 @@
 import { buildApp } from './app.js';
 import { loadConfig } from './config/index.js';
+import { createLogger } from './observability/logger.js';
 
 const config = loadConfig();
-const app = buildApp(config);
+const logger = createLogger(config);
+const app = buildApp(config, logger);
 
 const start = async () => {
   try {

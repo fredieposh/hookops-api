@@ -2,13 +2,16 @@ import { SUPPORTED_SCHEMA_MAJOR } from '@fredieposh/hookops-shared';
 import { describe, it, vi, expect } from 'vitest';
 import { buildApp } from '../app.js';
 import { assessContractMajor } from './contract-major.js';
+import { createLogger } from '../observability/logger.js';
 
 function createTestApp(contractMajor = SUPPORTED_SCHEMA_MAJOR) {
-  return buildApp({
-    serviceName: 'hookops-api',
+  const config = {
+    serviceName: 'hookops-api' as const,
     serviceVersion: '1.0.0',
     contractMajor,
-  });
+  };
+
+  return buildApp(config, createLogger(config));
 }
 describe('contract-major readiness', () => {
   it('readiness_on_contract_major_mismatch', async () => {
