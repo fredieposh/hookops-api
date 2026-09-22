@@ -13,6 +13,27 @@ function createTestApp(contractMajor = SUPPORTED_SCHEMA_MAJOR) {
 
   return buildApp(config, createLogger(config));
 }
+
+describe('health routes', () => {
+  it('liveness', async () => {
+    const app = createTestApp();
+
+    try {
+      const response = await app.inject({
+        method: 'GET',
+        url: '/health/live',
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json()).toEqual({
+        status: 'live',
+      });
+    } finally {
+      await app.close();
+    }
+  });
+});
+
 describe('contract-major readiness', () => {
   it('readiness_on_contract_major_mismatch', async () => {
     const app = createTestApp(SUPPORTED_SCHEMA_MAJOR + 1);

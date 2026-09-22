@@ -28,8 +28,8 @@ export function buildApp(config: AppStartupConfig, logger: pino.Logger) {
   registerCorrelationHook(app);
   const contract = assessContractMajor(config.contractMajor, app.log);
 
-  app.get('/health', () => {
-    return { status: 'ok' };
+  app.get('/health/live', () => {
+    return { status: 'live' };
   });
 
   app.get('/health/ready', (_request, reply) => {
