@@ -1,4 +1,5 @@
 import Fastify, { LogController } from 'fastify';
+import type { AppConfig } from './config/index.js';
 import {
   registerCorrelationHook,
   resolveRequestCorrelationId,
@@ -7,15 +8,15 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { join, dirname } from 'path';
 import { assessContractMajor } from './health/contract-major.js';
-import { LoggerConfig } from './observability/logger.js';
 import pino from 'pino';
+import { checkDependencies, type DependencyProbes } from './health/dependency-probes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-type AppStartupConfig = LoggerConfig;
+type AppStartupConfig = Pick<AppConfig, 'contractMajor' | 'probeTimeoutMs'>;
 
-export function buildApp(config: AppStartupConfig, logger: pino.Logger) {
+export function buildApp(config: AppStartupConfig, logger: pino.Logger, probes: DependencyProbes) {
   const app = Fastify({
     loggerInstance: logger,
     requestIdHeader: false,
@@ -27,12 +28,19 @@ export function buildApp(config: AppStartupConfig, logger: pino.Logger) {
 
   registerCorrelationHook(app);
   const contract = assessContractMajor(config.contractMajor, app.log);
+  const probeTimeoutMs = config.probeTimeoutMs ?? 1_000;
+
+  if (probes.close) {
+    app.addHook('onClose', async () => {
+      await probes.close?.();
+    });
+  }
 
   app.get('/health/live', () => {
     return { status: 'live' };
   });
 
-  app.get('/health/ready', (_request, reply) => {
+  app.get('/health/ready', async (_request, reply) => {
     if (!contract.compatible) {
       return reply.code(503).send({
         status: 'not_ready',
@@ -44,11 +52,20 @@ export function buildApp(config: AppStartupConfig, logger: pino.Logger) {
       });
     }
 
-    return reply.code(200).send({
-      status: 'ready',
+    const dependencies = await checkDependencies(probes, probeTimeoutMs);
+    const ready = dependencies.postgres === 'healthy' && dependencies.redis === 'healthy';
+
+    return reply.code(ready ? 200 : 503).send({
+      status: ready ? 'ready' : 'not_ready',
       components: {
         contract: {
           status: 'compatible',
+        },
+        postgres: {
+          status: dependencies.postgres,
+        },
+        redis: {
+          status: dependencies.redis,
         },
       },
     });

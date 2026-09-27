@@ -1,5 +1,5 @@
 import { SUPPORTED_SCHEMA_MAJOR } from '@fredieposh/hookops-shared';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { buildApp } from '../app.js';
 import { createLogger } from '../observability/logger.js';
 
@@ -9,8 +9,15 @@ describe('GET /version', () => {
       serviceName: 'hookops-api' as const,
       serviceVersion: '1.0.0',
       contractMajor: SUPPORTED_SCHEMA_MAJOR,
+      probeTimeoutMs: 1_000,
     };
-    const app = buildApp(config, createLogger(config));
+
+    const probes = {
+      postgres: vi.fn(),
+      redis: vi.fn(),
+    };
+
+    const app = buildApp(config, createLogger(config), probes);
 
     try {
       const response = await app.inject({

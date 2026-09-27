@@ -1,10 +1,12 @@
 import { buildApp } from './app.js';
 import { loadConfig } from './config/index.js';
 import { createLogger } from './observability/logger.js';
+import { createDependecyProbes } from './health/dependency-probes.js';
 
 const config = loadConfig();
 const logger = createLogger(config);
-const app = buildApp(config, logger);
+const probes = createDependecyProbes(config, logger);
+const app = buildApp(config, logger, probes);
 
 const start = async () => {
   try {

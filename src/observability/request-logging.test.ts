@@ -3,7 +3,7 @@ import {
   SUPPORTED_SCHEMA_MAJOR,
   isValidCorrelationId,
 } from '@fredieposh/hookops-shared';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { buildApp } from '../app.js';
 import { createLogger } from './logger.js';
 import { CORRELATION_ID_HEADER } from './request-correlation.js';
@@ -12,6 +12,12 @@ const config = {
   serviceName: 'hookops-api' as const,
   serviceVersion: '1.0.0',
   contractMajor: SUPPORTED_SCHEMA_MAJOR,
+  probeTimeoutMs: 1_000,
+};
+
+const probes = {
+  postgres: vi.fn(),
+  redis: vi.fn(),
 };
 
 function createCapturedApp() {
@@ -22,7 +28,7 @@ function createCapturedApp() {
     },
   };
 
-  const app = buildApp(config, createLogger(config, destination));
+  const app = buildApp(config, createLogger(config, destination), probes);
 
   app.post('/test/log-request', (request) => {
     request.log.info(
