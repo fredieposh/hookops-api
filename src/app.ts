@@ -4,17 +4,14 @@ import {
   registerCorrelationHook,
   resolveRequestCorrelationId,
 } from './observability/request-correlation.js';
-import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { join, dirname } from 'path';
 import { assessContractMajor } from './health/contract-major.js';
 import pino from 'pino';
 import { checkDependencies, type DependencyProbes } from './health/dependency-probes.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-type AppStartupConfig = Pick<AppConfig, 'contractMajor' | 'probeTimeoutMs'>;
+type AppStartupConfig = Pick<
+  AppConfig,
+  'serviceVersion' | 'gitCommitSha' | 'contractMajor' | 'probeTimeoutMs'
+>;
 
 export function buildApp(config: AppStartupConfig, logger: pino.Logger, probes: DependencyProbes) {
   const app = Fastify({
@@ -29,6 +26,12 @@ export function buildApp(config: AppStartupConfig, logger: pino.Logger, probes: 
   registerCorrelationHook(app);
   const contract = assessContractMajor(config.contractMajor, app.log);
   const probeTimeoutMs = config.probeTimeoutMs ?? 1_000;
+
+  const versionMetadata = {
+    version: config.serviceVersion,
+    commitSha: config.gitCommitSha,
+    contractMajor: contract.compiledMajor,
+  };
 
   if (probes.close) {
     app.addHook('onClose', async () => {
@@ -72,8 +75,7 @@ export function buildApp(config: AppStartupConfig, logger: pino.Logger, probes: 
   });
 
   app.get('/version', () => {
-    const pkg = JSON.parse(readFileSync(join(__dirname, '../package.json'), 'utf-8'));
-    return { version: pkg.version };
+    return versionMetadata;
   });
 
   return app;
