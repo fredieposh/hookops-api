@@ -13,6 +13,7 @@ const config = {
   serviceVersion: '1.0.0',
   contractMajor: SUPPORTED_SCHEMA_MAJOR,
   probeTimeoutMs: 1_000,
+  gitCommitSha: '0123456789abcdef0123456789abcdef01234567',
 };
 
 const probes = {

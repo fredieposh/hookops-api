@@ -24,6 +24,7 @@ function createTestApp({
     serviceVersion: '1.0.0',
     contractMajor,
     probeTimeoutMs,
+    gitCommitSha: '0123456789abcdef0123456789abcdef01234567',
   };
 
   return {
