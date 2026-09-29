@@ -4,7 +4,7 @@ import { buildApp } from '../app.js';
 import { createLogger } from '../observability/logger.js';
 
 describe('GET /version', () => {
-  it('returns a semantic version', async () => {
+  it('version_metadata', async () => {
     const config = {
       serviceName: 'hookops-api' as const,
       serviceVersion: '1.0.0',
