@@ -85,7 +85,7 @@ describe('health routes', () => {
   });
 
   it.each(['postgres', 'redis'] as const)(
-    'readiness_when_%s_unavailable',
+    'readiness_when_dependency_unavailable (%s)',
     async (unavailableDependency) => {
       const secret = 'postgresql://user:do-not-log@example.test/database';
       const probes = createProbes({
