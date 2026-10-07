@@ -91,18 +91,18 @@ describe('request correlation', () => {
     }
   });
 
-  it('replace an invalid incomeing correlationID', async () => {
+  it('replaces an invalid incoming correlation ID', async () => {
     const { app, readOutput } = createCapturedApp();
 
     try {
       const response = await app.inject({
-        method: 'GET',
+        method: 'POST',
         url: '/test/log-request',
         headers: {
           [CORRELATION_ID_HEADER]: 'invalid id with spaces',
         },
       });
-
+      expect(response.statusCode).toBe(200);
       const correlationId = response.headers[CORRELATION_ID_HEADER];
 
       expect(typeof correlationId).toBe('string');
