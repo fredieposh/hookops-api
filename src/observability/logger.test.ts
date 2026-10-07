@@ -51,7 +51,7 @@ describe('createLogger', () => {
       },
     });
 
-    expect(output).not.toContain('authorization-secret');
+    expect(output).not.toContain('authorization-token');
     expect(output).not.toContain('password-secret');
   });
 });
