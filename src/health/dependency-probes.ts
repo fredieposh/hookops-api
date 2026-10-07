@@ -54,7 +54,7 @@ export async function checkDependencies(
   };
 }
 
-export function createDependecyProbes(
+export function createDependencyProbes(
   config: Pick<AppConfig, 'dependencies' | 'probeTimeoutMs'>,
   logger: Logger,
 ): DependencyProbes {
@@ -77,7 +77,7 @@ export function createDependecyProbes(
     logger.warn(
       {
         event: 'dependency_client_error',
-        component: postgres,
+        component: 'postgres',
       },
       'PostgreSQL client reported an error',
     );
@@ -87,7 +87,7 @@ export function createDependecyProbes(
     logger.warn(
       {
         event: 'dependency_client_error',
-        component: postgres,
+        component: 'redis',
       },
       'Redis client reported an error',
     );

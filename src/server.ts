@@ -1,12 +1,12 @@
 import { buildApp } from './app.js';
 import { loadConfig } from './config/index.js';
 import { createLogger } from './observability/logger.js';
-import { createDependecyProbes } from './health/dependency-probes.js';
+import { createDependencyProbes } from './health/dependency-probes.js';
 import { serveUntilShutdown } from './server-lifecycle.js';
 
 const config = loadConfig();
 const logger = createLogger(config);
-const probes = createDependecyProbes(config, logger);
+const probes = createDependencyProbes(config, logger);
 const app = buildApp(config, logger, probes);
 
 try {
