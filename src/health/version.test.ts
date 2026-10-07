@@ -7,7 +7,7 @@ describe('GET /version', () => {
   it('version_metadata', async () => {
     const config = {
       serviceName: 'hookops-api' as const,
-      serviceVersion: '1.0.0',
+      serviceVersion: '9.8.7',
       gitCommitSha: '0123456789abcdef0123456789abcdef01234567',
       contractMajor: SUPPORTED_SCHEMA_MAJOR,
       probeTimeoutMs: 1_000,
