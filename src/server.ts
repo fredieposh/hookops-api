@@ -30,4 +30,5 @@ try {
     },
     'HTTP server stopped unexpectedly',
   );
+  process.exitCode = 1;
 }
