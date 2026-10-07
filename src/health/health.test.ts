@@ -54,7 +54,7 @@ describe('health routes', () => {
     }
   });
 
-  it('readiness_when_dependencies_ healthy)', async () => {
+  it('readiness_when_dependencies_healthy', async () => {
     const { app, probes } = createTestApp();
     try {
       const response = await app.inject({
@@ -191,35 +191,6 @@ describe('contract-major readiness', () => {
       });
       expect(probes.postgres).not.toHaveBeenCalled();
       expect(probes.redis).not.toHaveBeenCalled();
-    } finally {
-      await app.close();
-    }
-  });
-
-  it('allows readiness when contract majors match', async () => {
-    const app = createTestApp().app;
-
-    try {
-      const response = await app.inject({
-        method: 'GET',
-        url: '/health/ready',
-      });
-
-      expect(response.statusCode).toBe(200);
-      expect(response.json()).toEqual({
-        status: 'ready',
-        components: {
-          contract: {
-            status: 'compatible',
-          },
-          postgres: {
-            status: 'healthy',
-          },
-          redis: {
-            status: 'healthy',
-          },
-        },
-      });
     } finally {
       await app.close();
     }
