@@ -5,7 +5,7 @@ COPY package*.json ./
 COPY .npmrc ./
 RUN --mount=type=secret,id=NODE_AUTH_TOKEN,env=NODE_AUTH_TOKEN npm ci
 
-COPY tsconfig.json ./
+COPY tsconfig*.json ./
 COPY src/ src/
 RUN npm run build
 
